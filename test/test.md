@@ -12,5 +12,3 @@ date: "2019/10/01"
 tester
 
 testron
-
-testenum

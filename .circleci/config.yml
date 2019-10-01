@@ -1,0 +1,93 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cibuilds/hugo:latest
+    branches:
+        only:
+          - master
+    steps:
+
+
+
+      # git get
+      - run: apk update && apk add git
+      
+      # blogリポジトリのデータを取得する
+      - run: mkdir chk
+      - checkout: 
+          path: chk
+
+      - run: ls
+
+      - run: ls ./chk
+
+      # theme
+      - run: 
+          command: git clone https://github.com/mi-ki-ri/mikiquote-theme.git mikiquote-theme
+          working_directory: themes
+      
+      # hugoでTIL作る
+      - run: hugo new site mikiquote
+      
+
+      # ビルドしてユーザページサイトにPushする
+      - deploy:
+          command: |    
+              
+              git config --global user.email "mi.ki.ri.hassha.p@gmail.com"
+              git config --global user.name "mi-ki-ri"
+              git init
+              
+              rm -rf ./*
+
+
+
+              git remote add origin https://github.com/mi-ki-ri/mikiquote.git
+              #git add .
+              #git commit -m "CircleCI"
+              git pull origin master --allow-unrelated-histories --no-edit
+              rm -rf ./*
+
+              
+              
+
+              cp -fr ../chk/. ../mikiquote/content
+
+              ls
+              ls ./content
+
+              mkdir themes
+              mkdir themes/mikiquote-theme
+              cp -fr ../themes/mikiquote-theme/. ../mikiquote/themes/mikiquote-theme
+
+              #cp -f themes/even/exampleSite/config.toml ../TIL/.
+              # git submodule add https://github.com/siegerts/hugo-theme-basic.git themes/hugo-theme-basic
+
+
+              
+              echo 'BaseURL = "https://mi-ki-ri.github.io/mikiquote/"' >> config.toml
+              echo 'theme = "Mikiquote Theme"' >> config.toml
+              echo 'title = "Mikiquote"' >> config.toml
+              echo 'summaryLength = 75' >> config.toml
+
+              cat config.toml
+
+
+              hugo
+
+              cp -fr ./public/. ../tmp
+              cp -fr ../tmp/. ./docs
+              
+              ls
+              
+              ls themes
+              
+              echo 'Files for [Github-pages](https://mi-ki-ri.github.io/mikiquote/)' >> readme.md
+
+
+              git add .
+              git commit -m "CircleCI"
+
+              git push -u origin master 
+          working_directory: mikiquote

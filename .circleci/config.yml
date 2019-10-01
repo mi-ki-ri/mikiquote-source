@@ -31,8 +31,8 @@ jobs:
       - run: hugo new site mikiquote
       
       - add_ssh_keys:
-        fingerprints:
-        - "25:f4:05:08:84:31:37:ca:54:0a:00:29:f1:fc:3a:55"
+          fingerprints:
+            - "25:f4:05:08:84:31:37:ca:54:0a:00:29:f1:fc:3a:55"
 
       # ビルドしてユーザページサイトにPushする
       - deploy:
